@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     ghosts = [
-        new Ghost('blinky', 348, 250),
+        new Ghost('blinky', 294, 250),
         new Ghost('pinky', 376, 400),
         new Ghost('inky', 351, 300),
         new Ghost('clyde', 379, 500)
@@ -244,52 +244,87 @@ ghosts.forEach(ghost => {
 //move ghosts randomly
 ghosts.forEach(ghost => moveGhost(ghost))
 
+
+
+
+
 //write the function to move the ghosts
 
 function moveGhost(ghost) {
     const directions = [-1, +1, width, -width]
     let direction = directions[Math.floor(Math.random() * directions.length)]
+    function isInLair() {
+        if (squares[ghost.currentIndex].classList.contains('ghost-lair')) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+
+    
 
     ghost.timerId = setInterval(function() {
-        //if the next square ghost is moving to does not contain a wall and a ghost you can move
-        if (!squares[ghost.currentIndex + direction].classList.contains('wall') && 
-            !squares[ghost.currentIndex + direction].classList.contains('ghost')) {
-            
-            //remove all ghost related classes
-            squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
 
-            
-            const [ghostX, ghostY] = getCoordinates(ghost.currentIndex)
-            const [pacmanX, pacmanY] = getCoordinates(pacmanCurrentIndex)
-            const [ghostNewX, ghostNewY] = getCoordinates(ghost.currentIndex + direction)
-
-            //check if new square is closer to pacman
-            function isXCoordCloser () {
-                if ((Math.abs(ghostNewX - pacmanX)) < (Math.abs(ghostX -pacmanX))) {
-                    return true
-                } else return false
-            }
-
-            function isYCoordCloser () {
-                if ((Math.abs(ghostNewY - pacmanY)) < (Math.abs(ghostY -pacmanY))) {
-                    return true
-                } else return false
-            }
-
-            //if x or y are closer to pacman then move into new square
-            if (isXCoordCloser() || isYCoordCloser()) {
-                //change the currentIndex to new safe square
+        let insideLair = isInLair()
+        console.log(insideLair)
+        if (insideLair) {
+       
+            //if the next square ghost is moving to does not contain a wall and a ghost you can move
+            if (!squares[ghost.currentIndex + direction].classList.contains('wall') && 
+                !squares[ghost.currentIndex + direction].classList.contains('ghost')) {
+                
+                //remove all ghost related classes
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
+                
+                //COMMENT LINE TO REMOVE RANDOM GHOST BEHAVIOUR
                 ghost.currentIndex += direction
-                //redraw ghost in new safe square
+
+
+                //UNCOMMENT BELOW FOR GHOST AI TRACKING
+                // const [ghostX, ghostY] = getCoordinates(ghost.currentIndex)
+                // const [pacmanX, pacmanY] = getCoordinates(pacmanCurrentIndex)
+                // const [ghostNewX, ghostNewY] = getCoordinates(ghost.currentIndex + direction)
+
+                // //check if new square is closer to pacman
+                // function isXCoordCloser () {
+                //     if ((Math.abs(ghostNewX - pacmanX)) < (Math.abs(ghostX -pacmanX))) {
+                //         return true
+                //     } else return false
+                // }
+
+                // function isYCoordCloser () {
+                //     if ((Math.abs(ghostNewY - pacmanY)) < (Math.abs(ghostY -pacmanY))) {
+                //         return true
+                //     } else return false
+                // }
+
+                // //if x or y are closer to pacman then move into new square
+                // if (isXCoordCloser() || isYCoordCloser()) {
+                //     //change the currentIndex to new safe square
+                //     ghost.currentIndex += direction
+                //     //redraw ghost in new safe square
+                //     squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+                // } else {
+                //     squares[ghost.currentIndex].classList.add(ghost.className,'ghost')
+                //     direction = directions[Math.floor(Math.random() * directions.length)]
+                // }
+
                 squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
-            } else {
-                squares[ghost.currentIndex].classList.add(ghost.className,'ghost')
-                direction = directions[Math.floor(Math.random() * directions.length)]
-            }
 
-            squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+            } else direction = directions[Math.floor(Math.random() * directions.length)]
 
-        } else direction = directions[Math.floor(Math.random() * directions.length)]
+        } else {
+            if (!squares[ghost.currentIndex + direction].classList.contains('wall') && 
+                !squares[ghost.currentIndex + direction].classList.contains('ghost') &&
+                !squares[ghost.currentIndex + direction].classList.contains('ghost-lair')) {
+            
+                squares[ghost.currentIndex].classList.remove(ghost.className, 'ghost', 'scared-ghost')
+                ghost.currentIndex += direction
+                squares[ghost.currentIndex].classList.add(ghost.className, 'ghost')
+
+            } else direction = directions[Math.floor(Math.random() * directions.length)]
+        }
 
 
         // //else find new direction to try and move
